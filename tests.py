@@ -2,7 +2,6 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 import unittest
 
-# Импортируем тестируемые компоненты
 from feed_task import build_yml, PRODUCTS, CATEGORIES
 
 

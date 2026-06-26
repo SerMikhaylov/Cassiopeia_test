@@ -105,9 +105,8 @@ def build_yml(products, categories, generated_at):
     else:
         date_str = str(generated_at)
 
-    # Словарь для быстрого поиска активности категорий по их id
     categories_activity = {cat['id']: cat.get('is_active', True) for cat in categories}
-    # Словарь с именами категорий для последующей сборки тегов <category>
+    
     categories_names = {cat['id']: cat['name'] for cat in categories}
 
     valid_offers = []
@@ -143,7 +142,7 @@ def build_yml(products, categories, generated_at):
 
         # Товар полностью валиден — сохраняем данные для фида
         valid_offers.append((prod, price_val, image_url, name, cat_id))
-        # Запоминаем, что эта категория фактически используется
+        
         used_category_ids.add(cat_id)
 
     # Строим XML структуру
@@ -176,12 +175,14 @@ def build_yml(products, categories, generated_at):
         ET.SubElement(offer, 'url').text = f"https://example.test/products/{prod['slug']}/"
         ET.SubElement(offer, 'price').text = f"{price_val:.2f}"
 
+        old_price_val = None
         try:
-            old_price_val = float(prod.get('old_price'))
+            if prod.get('old_price') is not None:
+                old_price_val = float(prod.get('old_price'))
         except (ValueError, TypeError):
             old_price_val = None
 
-        if old_price_val and old_price_val > price_val:
+        if old_price_val and old_price_val > 0 and old_price_val > price_val:
                 ET.SubElement(offer, 'oldprice').text = f"{old_price_val:.2f}"
 
         ET.SubElement(offer, 'currencyId').text = 'RUB'
